@@ -25,7 +25,7 @@ export default async function ConfirmSubscriberPage({
   }
 
   if (!subscriber.verified) {
-    await updateSubscriberToVerified(subscriber.xata_id);
+    await updateSubscriberToVerified(subscriber.id);
   }
 
   const { email } = subscriber;

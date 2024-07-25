@@ -2,7 +2,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { createSubscriber, getOneSubscriberByEmail } from '@/lib/queries';
-import { sendConfirmationEmail } from '@/utils/email';
+// import { sendConfirmationEmail } from '@/utils/email';
 
 const subscribeSchema = z.object({
   email: z.string().email(),
@@ -17,7 +17,9 @@ export const subscribe = async (
   formData: FormData
 ): Promise<RetVal<string>> => {
   try {
-    const parsed = subscribeSchema.safeParse({ email: formData.get('email') });
+    const parsed = subscribeSchema.safeParse({
+      email: formData.get('email'),
+    });
     if (!parsed.success) return { error: parsed.error.message };
 
     const checkedEmail = parsed.data.email.toLowerCase();
@@ -31,12 +33,14 @@ export const subscribe = async (
     const newSubscriber = await createSubscriber(checkedEmail, token);
     console.log(newSubscriber);
 
-    const validateEmailLink = `${process.env.NEXT_PUBLIC_URL}/subscriber/confirm?token=${token}`;
-    const { error } = await sendConfirmationEmail(
-      checkedEmail,
-      validateEmailLink
-    );
-    if (error) return { error: 'Failed to send confirmation email' };
+    // Using Prisma Pulse you dont't need to run this code
+    //
+    // const validateEmailLink = `${process.env.NEXT_PUBLIC_URL}/subscriber/confirm?token=${token}`;
+    // const { error } = await sendConfirmationEmail(
+    //   checkedEmail,
+    //   validateEmailLink
+    // );
+    // if (error) return { error: 'Failed to send confirmation email' };
 
     return {};
   } catch (error) {

@@ -21,11 +21,11 @@ export async function getOneSubscriberByToken(
 }
 
 export async function updateSubscriberToVerified(
-  xata_id: string
+  id: number
 ): Promise<Subscriber> {
   return await prisma.subscriber.update({
     where: {
-      xata_id,
+      id,
     },
     data: {
       verified: true,

@@ -14,11 +14,8 @@ datasource db {
 }
 
 model Subscriber {
-  email                        String   @db.VarChar(255)
-  verified                     Boolean  @default(false)
-  token                        String   @db.VarChar(255)
-  xata_version                 Int      @default(0)
-  xata_createdat               DateTime @default(now()) @db.Timestamptz(6)
-  xata_updatedat               DateTime @default(now()) @db.Timestamptz(6)
-  xata_id                      String   @id @unique(map: "Subscriber__pgroll_new_xata_id_key") @default(dbgenerated("('rec_'::text || (xata_private.xid())::text)"))
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  token    String  @db.VarChar(255)
+  verified Boolean @default(false)
 }
