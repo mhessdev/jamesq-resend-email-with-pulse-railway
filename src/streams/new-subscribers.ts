@@ -3,6 +3,7 @@ import ConfirmEmail from '../emails/emailConfirmation';
 import * as React from 'react';
 import prismaWithPulse from '../lib/db-with-pulse';
 import { Resend } from 'resend';
+import pRetry from 'p-retry';
 
 // Initialize Resend client
 const resendClient = new Resend(process.env.RESEND_API_KEY);
@@ -43,18 +44,25 @@ const emailStream = async () => {
     console.log('Received event:', event);
     const { email, token } = event.created;
 
-    try {
-      await sendUserCreationEmail(email, token);
-      console.log('Email sent!');
-    } catch (error) {
-      console.error('Email sending error:', error);
-    }
+    // Rather than trying to catch an error, we rely on pulse to retry the event
+    // This allows us to have a more resilient system that can handle intermittent network problems
+    await sendUserCreationEmail(email, token);
   }
 };
 
 // Main function
 async function main() {
-  await emailStream();
+  try {
+    await pRetry(() => emailStream(), {
+      // timeout stuff maybe
+      retries: 3,
+    });
+  } catch (error) {
+    // at this point we've already exhausted retries and still failing
+    // Pulse still has the message though! we can go fix things and try this again
+    // raise an alert or something here so we know it's wrong
+    console.error('Failed to send emails:', error);
+  }
 }
 
 // Run the main function

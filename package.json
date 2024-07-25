@@ -14,6 +14,7 @@
     "@prisma/extension-pulse": "1.2.0",
     "@react-email/components": "^0.0.22",
     "next": "14.2.5",
+    "p-retry": "^6.2.0",
     "react": "^18",
     "react-dom": "^18",
     "react-email": "^2.1.6",
